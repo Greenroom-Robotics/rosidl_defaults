@@ -2,6 +2,10 @@
 Changelog for package rosidl_default_generators
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Greenroom
+------------------
+* Add `rosidl_generator_mypy` to cmakelist
+
 1.3.0 (2022-05-04)
 ------------------
 
