@@ -1,0 +1,48 @@
+name: Tag & Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      TAG_NAME:
+        description: 'Tag name. eg) 1.0.0 or 1.0.0-rc.1'
+        required: true
+
+jobs:
+  deploy-debian-stable:
+    name: Release ${{ github.event.inputs.TAG_NAME }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v2.3.4
+        with:
+          path: ${{ github.repository }}
+
+      - name: Bump version
+        run: |
+          sed -i ":a;N;\$!ba; s|<version>.*<\/version>|<version>${{ github.event.inputs.TAG_NAME }}<\/version>|g" ${{ github.repository }}/package.xml
+
+      - name: Build stable Debian package
+        uses: Greenroom-Robotics/ros2-build-debian-action@main
+        with: 
+          ros2-distro: galactic
+
+      - name: Create a release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.TAG_NAME }}
+          files: | 
+            package/*.deb
+            package/*.ddeb
+          generate_release_notes: true
+
+      - name: Push .deb to Greenroom Packages
+        uses: Greenroom-Robotics/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: package/*.deb
+          destination_repo: 'Greenroom-Robotics/packages'
+          destination_folder: 'debian'
+          user_email: 'ci@greenroomrobotics.com'
+          user_name: 'Github CI'
+          commit_message: 'feat: add debian package: https://github.com/${{ GITHUB_REPOSITORY }}/commit/${{ GITHUB_SHA }}'
