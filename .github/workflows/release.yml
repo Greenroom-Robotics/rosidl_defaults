@@ -45,4 +45,4 @@ jobs:
           destination_folder: 'debian'
           user_email: 'ci@greenroomrobotics.com'
           user_name: 'Github CI'
-          commit_message: 'feat: add debian package: https://github.com/${{ GITHUB_REPOSITORY }}/commit/${{ GITHUB_SHA }}'
+          commit_message: 'feat: add debian package: https://github.com/${{ github.GITHUB_REPOSITORY }}/commit/${{ github.GITHUB_SHA }}'
