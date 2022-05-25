@@ -19,8 +19,10 @@ jobs:
 
       - name: Bump version
         run: |
-          sed -i ":a;N;\$!ba; s|<version>.*<\/version>|<version>${{ github.event.inputs.TAG_NAME }}<\/version>|g" ${{ github.repository }}/package.xml
-
+          for i in **/package.xml; do
+              [ -f "$i" ] || break
+              sed -i ":a;N;\$!ba; s|<version>.*<\/version>|<version>${{ github.event.inputs.TAG_NAME }}<\/version>|g" ${{ github.repository }}/$i
+          done
       - name: Build stable Debian package
         uses: Greenroom-Robotics/ros2-build-debian-action@main
         with: 
